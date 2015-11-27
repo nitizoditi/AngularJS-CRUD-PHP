@@ -1,0 +1,3 @@
+After around of a year ago, I upgarde the angulajrs version to angularjs 1.4.2. to continue my project.
+Because v1.3.0 contain some of the issues, weak compatibility with DateTime Object bind to date/time input DOM, <select> DOM options problem and so on.
+Recent, I implemented a online shppong site template for a DEMO.
