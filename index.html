@@ -1,0 +1,278 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/bootstrap-t.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minmum-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Sponline |</title>
+<!-- InstanceEndEditable -->
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="third-party/font-awesome-4.4.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/controllerCRUD.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-create.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-read.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-update.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-delete.js"></script>
+<script type="text/javascript" src="js/controller-listwin.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<style>
+.text-over{
+	white-space: nowrap;
+	width: 100%;                   
+	overflow: hidden;              /* "overflow" value must be different from "visible" */ 
+	text-overflow: ellipsis;
+}
+</style>
+<script type="text/javascript" src="js/securityControl.js"></script>
+<script>
+$(function() {
+	var isUserLogin = checkUserLogin();
+	//console.log(isUserLogin)
+});
+</script>
+
+<script>
+//  var app = angular.module("myApp", ['ngAnimate', 'ngRoute'], function($httpProvider, $provide, $injector) {});
+
+app.config(function($routeProvider) {
+    $routeProvider.
+      when('/page/:pageID?/', {
+        template: 'gridView.html',
+        controller: 'emptyCtrl',
+      }).
+	  when('details/:details?', {
+        template: 'gridView.html',
+        controller: 'detailsCtrl'
+      }).
+	  when('search/:search?/page/:pageID?', {
+        template: 'gridView.html',
+        controller: 'contactFormContainer'
+      }).
+      when('/', {
+        template: 'gridView.html',
+        controller: 'contactFormContainer'
+      }).
+      otherwise({ redirectTo: '/' });
+	  
+	  //$locationProvider.html5Mode(true);
+});
+
+
+app.controller("emptyCtrl", function($rootScope, $scope, $route, $routeParams, $http, $log, $timeout) {
+})
+
+var CRUDContainerObj = app.controller('CRUD-container', function($route, $location, $scope, $rootScope, $http, $element, $attrs, $log, $timeout) {
+
+});
+
+app.controller("contactFormContainer", function($rootScope, $location, $scope, $route, $routeParams, $http, $log, $timeout) {
+//  $scope.form.pageID = $routeParams.pageID;
+//  $scope.form.details = $routeParams.details;
+  
+  //$scope.routeParams = {};
+  //$scope.routeParams = $routeParams;
+    
+  /*
+		console.dir($rootScope);
+		console.dir($scope)
+		console.dir($scope.$parent.$parent)
+		*/
+		
+		//console.log($routeParams.pageID);
+			console.dir($location);
+	// default page one
+	if($location.$$path=="/")
+		$routeParams.pageID = "1";
+			
+	  $rootScope.$on("$routeChangeStart", 
+	  function (event, current, previous, rejection) {
+		$scope.$parent.RefreshData = function(haha){
+		}
+	  });      
+	  $rootScope.$on("$routeChangeSuccess", 
+	  function (event, current, previous, rejection) {
+	    console.log($scope, $rootScope, $route, $location);
+		var pageID = $routeParams.pageID
+			$scope.$parent.PointToPage(pageID)
+	  });
+	  
+	if(typeof $routeParams.pageID != "undefined"){
+		var pageID = $routeParams.pageID
+			//$scope.PointToPage(pageID)
+	
+	/*
+		if( typeof $scope.$parent.PointToPage == "function"){
+			console.log("page "+  pageID +": turn to here");
+			$scope.$parent.PointToPage(pageID)
+		}
+	
+		if( typeof $scope.PointToPage == "function"){
+			console.log("page "+  pageID +": turn to here");
+			$scope.PointToPage(pageID)
+		}
+		*/
+		$scope = $scope.$new(true);
+		if( typeof $scope.$parent.PointToPage == "function"){
+			console.log("page "+  pageID +": turn to here");
+			$scope.$parent.PointToPage(pageID)
+		}
+		if( typeof $scope.PointToPage == "function"){
+			console.log("page "+  pageID +": turn to here");
+			$scope.PointToPage(pageID)
+		}
+	}else{
+		//$scope.$parent.PointToFirstPage();
+	}
+	
+	if( typeof $scope.$parent.RefreshData == "function"){
+		
+		$scope.$parent.RefreshData = function(haha){
+		}
+	}
+	
+	//console.log($routeParams.pageID);
+	//console.dir($scope)
+});
+</script>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar">
+  <!-- InstanceBeginEditable name="topbar" -->
+  <!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header start -->
+<div id="header">
+  <div id="header_title">
+    <!-- InstanceBeginEditable name="header" -->
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div id="comapny_icon_container" class="navbar-brand">
+        <a href="index.html"></a>
+        <span class="hidden-xs">sponline 藥房</span>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div class="navbar-header navbar-brand navbar-right loginButton"><a href="login.html">Login</a></div>
+      <ul class="nav navbar-nav navbar-right requireLogin">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img id="profile_icon" src="images/people.png"><span class="user_nickName">Nick Name</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="main-menu.html">Admin Main Page</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Change Password</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="controller/user-logout-redirect.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header end -->
+<!-- site position start -->
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+<ul>
+  <li><a href="http://localhost/sponline">首頁</a></li>
+</ul>
+</div>
+<!-- InstanceEndEditable -->
+<!-- site position end -->
+<!-- InstanceBeginEditable name="intro" -->
+<div id="intro" class="container panel panel-default">
+  <div id="intro_left" class="panel-body"></div>
+  <div id="intro_right" class="panel-body"></div>
+</div>
+<!-- InstanceEndEditable -->
+<div id="content" class="container">
+  <!-- InstanceBeginEditable name="content" -->
+  <div class="panel">
+  <base href="/sponline/">
+    <div ng-controller="CRUD-container" class="crud-container">
+		  <textarea class="sr-only" readonly rows="10" cols="20" class="form-control" ng-bind="definition | json" ng-init="definition={hidden:['userID','imagePath'],label:{
+		  productName:'Product Name',
+          productDescription:'Description',
+          Price:'Price'
+		  }
+		  }">
+		  </textarea>
+		  <br>
+			<input hidden type="text" ng-model="action" ng-init="action = 'public-selectProduct.php'">
+		  <crud table="product" custom-template="public-view-product.html" controller="CRUD-read-controller">
+		  </crud>
+    </div>
+  </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+<footer>
+  <div id="team_member_backgroup">
+    <div id="team_member">
+      <ol>
+        <li>網站地圖︰
+          <nav>
+            <ul>
+              <li>家庭用品</li>
+              <li>浴室用品</li>
+              <li>獨立專區</li>
+              <li>嬰兒專區</li>
+              <li>長者專區</li>
+              <li>衛生防護用品</li>
+            </ul>
+          </nav>
+        </li>
+        <li>關於本店:
+          <nav>
+            <ul>
+              <li><a href="#">商店資訊</a></li>
+              <li><a href="#">付款須知</a></li>
+              <li><a href="#">私隱聲明</a></li>
+              <li><a href="#">聯絡我們</a></li>
+            </ul>
+          </nav>
+        </li>
+        <li style="display: none;">You may contact us by using the following information 
+          or sending us a message via our contact form.
+          <nav>
+            <ul>
+              <li>Tel: 2900 0000</li>
+              <li>Email: admin@hrms.com.hk</li>
+            </ul>
+          </nav>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <div id="copyright"> Copyright © 2015. All Rights Reserved. </div>
+</footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>

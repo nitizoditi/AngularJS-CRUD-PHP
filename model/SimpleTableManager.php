@@ -1,5 +1,6 @@
 <?php
 require_once 'DatabaseManager.php';
+//require_once 'SecurityManager.php';
 
 class SimpleTableManager extends DatabaseManager {
     protected $_ = array(
@@ -9,18 +10,20 @@ class SimpleTableManager extends DatabaseManager {
     );
 	
 	protected $table = "";
+	//protected $securityManager;
     
     function __construct() {
 		parent::__construct();
+		//$this->securityManager = new SecurityManager();
     }
 	function Initialize($tableName=""){
 		$this->table = $tableName;
+		$this->debug = true;
 		
 		// set parent dataSchema
 		parent::getDataSchemaForSet();
 		// set construct _ index
 		parent::setArrayIndex();
-		
 	}
 	
 	function get(){

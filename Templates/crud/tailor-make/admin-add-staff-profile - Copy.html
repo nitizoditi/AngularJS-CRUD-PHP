@@ -1,0 +1,267 @@
+
+<pre class="sr-only">{{cProfile | json}}</pre>
+  <fieldset ng-disabled="submitStatus.lockControl">
+			<input hidden name="table" ng-value="table.name">
+			<input hidden name="crud-type" ng-value="table.type">
+			  <div class="form-group form-entity" ng-controller="uploadCtrl">
+				<label class="col-sm-3 control-label">Photo</label>
+                  <div class="col-sm-3" style="max-width: 354px;">
+                    <div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
+                   ngf-multiple="true" ngf-accept="'image/gif,image/jpeg,image/png'" accept="'image/gif,image/jpeg,image/png'"
+                   ngf-capture="true"
+                   ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+                   ngf-allow-dir="false" class="drop-box" ngf-drop-available="true"><img class="img-responsive" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'"style="display: table-cell; vertical-align: middle;"><span ng-hide="files[0].type.indexOf('image') > -1" style="display: table-cell; vertical-align: middle;">Select File or Drop</span></div>
+                    </div>
+                  <div class=" col-sm-offset-3 col-sm-3" style="clear: left;" ng-show="files[0].type.indexOf('image') > -1">
+				    <input
+					type="text"
+					class="form-control"
+					id="imagePath"
+					name="imagePath"
+					ng-model="create.imagePath"
+                    ng-change="imagePathChanged(this)"
+                    readonly>
+                  </div>
+                  <div class="col-sm-3" ng-show="files[0].type.indexOf('image') > -1">
+                    <a href="#" class="btn btn-default fa fa-trash-o" ng-click="files[0]= {}"> Delete uploaded image</a>
+                  </div>
+                  <div ng-model="submitStatus.isCreateSuccess" ng-change="files=[]">
+                  </div>
+              </div>
+			  <div class="form-group form-entity">
+				<label for="staffID" class="col-sm-3 control-label">Staff ID</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.staffID.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="staffID"
+					name="staffID"
+					maxlength="{{fields.staffID.length}}"
+					ng-required="fields.staffID.null"
+					ng-model="create.staffID">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.staffID.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.staffID.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="lastName" class="col-sm-3 control-label">Last Name</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.lastName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="lastName"
+					name="lastName"
+					maxlength="{{fields.lastName.length}}"
+					ng-required="fields.lastName.null"
+					ng-model="create.lastName">
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.lastName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="firstName" class="col-sm-3 control-label">First Name</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.firstName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="firstName"
+					name="firstName"
+					maxlength="{{fields.firstName.length}}"
+					ng-required="fields.firstName.null"
+					ng-model="create.firstName">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.firstName.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.firstName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="fullName" class="col-sm-3 control-label">Full Name</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.fullName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="fullName"
+					name="fullName"
+					maxlength="{{fields.fullName.length}}"
+					ng-required="fields.fullName.null"
+					ng-model="create.fullName">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.fullName.$error.required"></span>
+				  <span class="help-block">e.g Chan Tai Men</span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.fullName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="position" class="col-sm-3 control-label">Position</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.position.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="position"
+					name="position"
+					maxlength="{{fields.position.length}}"
+					ng-required="fields.position.null"
+					ng-model="create.position">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.position.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.position.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="nickName" class="col-sm-3 control-label">Alias</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.nickName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="nickName"
+					name="nickName"
+					maxlength="{{fields.nickName.length}}"
+					ng-required="fields.nickName.null"
+					ng-model="create.nickName">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.nickName.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.nickName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="gender" class="col-sm-3 control-label">Gender</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.gender.$error.required}">
+                  <select
+					class="form-control"
+					id="gender"
+					name="gender"
+					ng-required="fields.gender.null"
+					ng-model="create.gender">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                  </select>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.gender.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="dateOfBirth" class="col-sm-3 control-label">Date of Birth</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.dateOfBirth.$error.required}">
+				  <input
+					type="date"
+					class="form-control"
+					id="dateOfBirth"
+					name="dateOfBirth"
+					maxlength="{{fields.dateOfBirth.length || 65536}}"
+					ng-required="fields.dateOfBirth.null"
+					ng-model="tempDate['dateObject']['dateOfBirth']"
+					ng-change="convertDateToString(tempDate['dateObject']['dateOfBirth'], 'dateOfBirth', 'date')"
+					style="  line-height: initial;">
+				<input
+					type = "text"
+					readonly = "readonly"
+					class="sr-only"
+					ng-model="create.dateOfBirth"
+					>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.dateOfBirth.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.dateOfBirth.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="address" class="col-sm-3 control-label">Correspondence address</label>
+				<div class="col-sm-5">
+				  <textarea
+					type="text"
+					class="form-control"
+					id="address"
+					name="address"
+					maxlength="{{fields.address.length || 65536}}"
+					ng-required="fields.address.null"
+					ng-model="create.address"></textarea>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="address" class="col-sm-3 control-label">Supervisor</label>
+				<div class="col-sm-5">
+                  <div table="staff" template-type="html5" ng-controller="listWin-controller">
+                  <textarea readonly rows="10" cols="20" class="form-control sr-only" ng-bind="definition | json" ng-init="definition={hidden:['lastName','firstName','userID','gender','dateOfBirth','address','email','supervisor','contactNo1','contactNo2','imagePath'],label:{
+                  staffID:'Staff ID',
+                  fullName:'Full Name',
+                  nickName:'Alias'
+                  }
+                  }">
+                  </textarea>
+				    <div ng-controller="listwin-copyDetails">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="contactNo1"
+                        name="contactNo1"
+                        maxlength="{{fields.supervisor.length}}"
+                        ng-required="fields.supervisor.null"
+                        ng-model="create.supervisor">
+                        <input type="text" class="form-control" ng-model="selectedRecord['fullName']" readonly>
+                        <listwin custom-template="staff-profile-listwin.html"></listwin>
+                    </div>
+                  </div>
+				</div>
+                <div class="col-sm-9 col-sm-offset-3" style="clear: left;">
+                </div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="contactNo1" class="col-sm-3 control-label">Contact No.1</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.contactNo1.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="contactNo1"
+					name="contactNo1"
+					maxlength="{{fields.contactNo1.length}}"
+					ng-required="fields.contactNo1.null"
+					ng-model="create.contactNo1">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.contactNo1.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.contactNo1.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="contactNo2" class="col-sm-3 control-label">Contact No.2</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.contactNo2.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="contactNo2"
+					name="contactNo2"
+					maxlength="{{fields.contactNo2.length}}"
+					ng-required="fields.contactNo2.null"
+					ng-model="create.contactNo2">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.contactNo2.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.contactNo2.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="email" class="col-sm-3 control-label">Email</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.email.$error.required}">
+				  <input
+					type="email"
+					class="form-control"
+					id="email"
+					name="email"
+					maxlength="{{fields.email.length}}"
+					ng-required="fields.email.null"
+					ng-model="create.email">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.email.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.email.$error.required">Required</label>
+				</div>
+			  </div>
+			</fieldset>

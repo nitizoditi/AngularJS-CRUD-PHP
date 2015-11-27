@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Upload</title>
+<script src="jquery-2.1.1.min.js"></script>
+<!--<script src="angular.min.1.3.0.js"></script>-->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+
+<!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
+<!-- <script src="ng-file-upload-3.3.4/demo/war/js/angular-file-upload-shim.js"></script> -->
+<script src="ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+<script src="ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload.js"></script>
+
+<style>
+.button {
+    -moz-appearance: button;
+    /* Firefox */
+    -webkit-appearance: button;
+    /* Safari and Chrome */
+    padding: 10px;
+    margin: 10px;
+    width: 70px;
+}
+.drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 200px;
+    height: 65px;
+    text-align: center;
+    padding-top: 25px;
+    margin: 10px;
+}
+.dragover {
+    border: 5px dashed blue;
+}
+</style>
+
+<script type="text/javascript">
+
+//var app = angular.module('fileUpload', ['ngFileUpload']);
+var app = angular.module('fileUpload', ['ngFileUpload']);
+var version = '5.0.8';
+
+app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
+    $scope.usingFlash = FileAPI && FileAPI.upload != null;
+
+    $scope.changeAngularVersion = function () {
+        window.location.hash = $scope.angularVersion;
+        window.location.reload(true);
+    };
+
+    $scope.$watch('files', function (files) {
+        $scope.formUpload = false;
+
+        console.log("hello");
+        console.dir(files);
+
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.uploadPic = function (files) {
+        $scope.formUpload = true;
+        if (files != null) {
+            upload(files[0])
+        }
+    };
+
+    function upload(file) {
+        $upload.upload({
+                    url: '../controller/importProduct.php',
+                    fields: {
+                        'username': $scope.username
+                    },
+                    file: file
+                }).progress(function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log('progress: ' + progressPercentage + '% ' +
+                                evt.config.file.name);
+                    $scope.progressPercentage[file.name] = progressPercentage;
+                }).success(function (data, status, headers, config) {
+                    var filename = config.file.name;
+                    $scope.excelJson = data;
+                    console.dir(data)
+        });
+
+        file.upload.then(function (response) {
+            $timeout(function () {
+                file.result = response.data;
+            });
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+}]);
+  </script>
+
+</head>
+<body ng-app="fileUpload">
+
+
+<div class="upload-div" ng-app="fileUpload" ng-controller="MyCtrl" style="width:200px;">
+Username
+      <fieldset>
+        <legend>Play with attributes</legend>
+        <!--
+        <label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
+        <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
+        <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
+        <label>ngf-min-size: <input type="text" ng-model="minSize"></label><br/>
+        <label>ngf-max-size: <input type="text" ng-model="maxSize"></label><br/>
+        <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
+        <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
+        <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
+        <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in ng-model)</label><br/>
+        <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow duplicates)</label><br/>
+        <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click (reset file input and model on
+          click)</label><br/>
+        <label><input type="checkbox" ng-model="resetModelOnClick">ngf-reset-model-on-click (reset model on
+          click)</label><br/>
+        -->
+<!--
+        <div class="up-buttons">
+          <div ngf-select ngf-drop="true" ng-model="files" ng-model-rejected="rejFiles"
+               ngf-multiple="true" ngf-accept="image/*" accept="image/*"
+               ngf-capture="true"
+               ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+               ngf-min-size="minSize" ngf-max-size="maxSize"
+               ngf-reset-on-click="true"
+               ngf-reset-model-on-click="true"
+               ngf-allow-dir="false" class="drop-box" ngf-drop-available="true">Select File or Drop</div>
+          <br/>
+        </div>
+        -->
+        <div class="up-buttons">
+          <div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
+               ngf-multiple="true" ngf-accept="'application/excel'" accept="'application/excel'"
+               ngf-capture="true"
+               ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+               ngf-allow-dir="false" class="drop-box" ngf-drop-available="true">Select File 
+            <span ng-show="dropAvailable">or Drop</span></div>
+          <br/>
+        </div>
+
+        <div class="preview">
+          <div>Preview image/audio/video:</div>
+          <img ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
+          <audio controls ngf-src="files[0]" ng-show="files[0].type.indexOf('audio') > -1"
+                 ngf-accept="'audio/*'"></audio>
+          <video controls ngf-src="files[0]" ng-show="files[0].type.indexOf('video') > -1"
+                 ngf-accept="'video/*'"></video>
+        </div>
+      </fieldset>
+</div>
+
+<a href="http://www.sitepoint.com/web-foundations/mime-types-complete-list/" target="_blank">MIME Types – Complete List</a>
+
+
+
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!-- Use .container-fluid for a full width container, spanning the entire width of your viewport. -->
+<div class="container-fluid">
+  <div style="display:none;">
+  {{
+  	systemFields = [
+  		"createDate",
+  		"createUser",
+  		"lastUpdateDate",
+  		"lastUpdateUser",
+  		"systemUpdateDate",
+  		"systemUpdateUser",
+  		"systemUpdateProgram"
+  	];
+  }}
+  </div>
+  
+  <div ng-hide="Update=='Y'">
+  	<ng-include src="'navigationBar.html'"></ng-include>
+  </div>
+  
+  <div ng-hide="Update=='Y' || view == 'G'" ng-show="view == 'T'">
+  	<ng-include src="'tableView.html'"></ng-include>
+  </div>
+  
+  <div ng-hide="Update=='Y' || view=='T' || FirstReadFinished" ng-show="view == 'G'">
+  	<ng-include src="'gridView.html'"></ng-include>
+  </div>
+  
+  <div ng-hide="Update!='Y'">
+  	<ng-include src="'updateRecord.html'"></ng-include>
+  </div>
+  
+  <script type="text/ng-template" id="navigationBar.html">
+  <div>
+    <div class="form-horizontal" role="form">
+	<div class="form-group has-feedback">
+	  <div class="col-sm-5">
+	  <input type="text" name="searchInGrid" class="form-control" ng-model="searchInGrid">
+	  <span class="glyphicon glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>
+	  </div>
+	  <div class="col-sm-4">
+		  <div class="form-inline">
+			<button type="button" class="btn btn-default {{table.name}}-refresh-data refresh-data" id="{{table.name}}-refresh-data" 
+			ng-click="RefreshData();" 
+			ng-disabled="updateStatus.disableRefresh"
+			>
+			<span class="glyphicon glyphicon glyphicon-refresh"
+				ng-class="{'fa-spin':updateStatus.refreshingData}"></span>
+			<span class="sr-only">Refresh</span>
+			</button>
+			
+					<button type="button" class="btn btn-default" ng-click="PointToFirstPage()" ng-disabled="isPointAtStart">
+					<span class="fa fa-angle-double-left"></span>
+					<span class="sr-only">First</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToPreviousPage()" ng-disabled="isPointAtStart">
+					<span class="fa fa-angle-left"></span>
+					<span class="sr-only">Previous</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToNextPage()" ng-disabled="isPointAtEnd">
+					<span class="fa fa-angle-right"></span>
+					<span class="sr-only">Next</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToLastPage()" ng-disabled="isPointAtEnd">
+					<span class="fa fa-angle-double-right"></span>
+					<span class="sr-only">Last</span>
+					</button>
+			<!-- max records on page -->
+			<!--
+			<select name="step" class="form-control" ng-model="step" ng-change="StepChanged(this)">
+			  <option value="5">5</option>
+			  <option value="10">10</option>
+			  <option value="25">25</option>
+			  <option value="50">50</option>
+			</select>
+			-->
+			<!--
+			<select ng-model="step" ng-option="tempOption.numOfStep for tempOption in stepOption">
+			</select>
+			-->
+			<button type="button" class="btn btn-default" ng-click="view='T'" ng-hide="view=='T'" ng-disabled="displayData.length==0">
+			<span class="glyphicon glyphicon-list"></span>
+			<span class="sr-only">Table View</span>
+			</button>
+			<button type="button" class="btn btn-default" ng-click="view='G'" ng-hide="view=='G'" ng-disabled="displayData.length==0">
+			<span class="glyphicon glyphicon-th-large"></span>
+			<span class="sr-only">Grid View</span>
+			</button>
+		  </div>
+	  </div>
+	  <div class="col-sm-3">
+		
+		<div class="panel panel-default" ng-show="view=='T'" style="position: absolute;
+  width: 100%;
+  left: 0px;
+  z-index: 10;">
+		<div class="panel-heading" style="padding: 0px;" ng-init="showHidePanel=false">
+		<!-- show/hide column -->
+	    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-click="showHidePanel=!showHidePanel" style="width: 100%;">
+	  	  Show / Hide Column
+	    </button>
+		</div>
+		<!-- Single button -->
+		<div class="panel-body" style="padding:0px;" ng-show="showHidePanel" style="-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(148, 149, 149, 0.6); box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(148, 149, 149, 0.6);">
+		<div>
+		  <div
+		    ng-repeat="field in dataSchema"
+		    ng-init="name=field.Field;label=definition.label[name] ? definition.label[name] : name;">
+			  <div ng-if="definition.hidden.indexOf(name) == -1 && systemFields.indexOf(name)==-1">
+				<button 
+					type="button" 
+					class="btn btn-link showOrHideColumn" 
+					ng-init="showCol[name] = true" 
+					ng-click="showCol[name]=!showCol[name]" 
+					ng-class="{hideColOnTable:showCol[name]==false}"
+					style="width: 100%;text-align: left;">
+				<i class="fa fa-eye" ng-show="showCol[name]"></i>
+				<i class="fa fa-eye-slash" ng-show="!showCol[name]"></i>
+				{{label}}</button>
+			  </div>
+		  </div>
+		</div>
+		</div>
+		</div>
+	  </div>
+  <!--<pre>Sorting predicate = {{sort.predicate}}; reverse = {{sort.reverse}}</pre>
+  <hr/>
+  [ <a href="" ng-click="predicate=''">unsorted</a> ] -->
+	</div>
+	</div>
+  </div>
+  </script>
+  
+  <script type="text/ng-template" id="tableView.html">
+  <div class="table-entities table-responsive" ng-init="sort.reverse=false; sort.predicate=''">
+    <table class="table">
+  	<thead>
+  	  <tr>
+	    <th>Edit</th>
+        <!--
+        <th 
+        ng-init="name='productID'"
+        ng-show="showCol[field.Field]">
+  		  <a href ng-click="sort.predicate=name; sort.reverse=!sort.reverse" style="margin-right: 14px;">#</a>
+  		  <span class="glyphicon glyphicon-chevron-up"
+  		  ng-show="sort.predicate==name && !sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+  		  <span class="glyphicon glyphicon-chevron-down" ng-show="sort.predicate==name && sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+        </th>-->
+        <th
+        ng-show="showCol['productID']">
+  		  <a href ng-click="sort.predicate='productID'; sort.reverse=!sort.reverse" style="margin-right: 14px;">ID</a>
+  		  <span class="glyphicon glyphicon-chevron-up"
+  		  ng-show="sort.predicate=='productID' && !sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+  		  <span class="glyphicon glyphicon-chevron-down" ng-show="sort.predicate=='productID' && sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span></th>
+        <th
+        ng-show="showCol['productName']">Name</th>
+        <!--<th
+        ng-show="showCol['productDescription']">Description</th>-->
+        <th
+        ng-show="showCol['price']"><a href ng-click="sort.predicate='price'; sort.reverse=!sort.reverse" style="margin-right: 14px;">HKD$</a>
+  		  <span class="glyphicon glyphicon-chevron-up"
+  		  ng-show="sort.predicate=='price' && !sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+  		  <span class="glyphicon glyphicon-chevron-down" ng-show="sort.predicate=='price' && sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span></th>
+        <th
+        ng-show="showCol['quantity']">Quantity</th>
+        <th
+        ng-show="showCol['publishStartDate']"><a href ng-click="sort.predicate='publishStartDate'; sort.reverse=!sort.reverse" style="margin-right: 14px;">Publish Start</a>
+  		  <span class="glyphicon glyphicon-chevron-up"
+  		  ng-show="sort.predicate=='publishStartDate' && !sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+  		  <span class="glyphicon glyphicon-chevron-down" ng-show="sort.predicate=='publishStartDate' && sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span></th>
+        <th
+        ng-show="showCol['publishEndDate']"><a href ng-click="sort.predicate='publishEndDate'; sort.reverse=!sort.reverse" style="margin-right: 14px;">Publish End</a>
+  		  <span class="glyphicon glyphicon-chevron-up"
+  		  ng-show="sort.predicate=='publishEndDate' && !sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span>
+  		  <span class="glyphicon glyphicon-chevron-down" ng-show="sort.predicate=='publishEndDate' && sort.reverse"
+  		  style="position: absolute;
+  			right: 0px;
+  			top: 11.5px;"></span></th>
+  	  </tr>
+  	</thead>
+  	
+  	<tbody>
+  	  <tr ng-repeat="dataRecord in displayData | filter:searchInGrid | 
+			orderBy:sort.predicate:sort.reverse">
+		<td>
+	    <button type="button" class="btn btn-default btn-sm" ng-click="CloneForUpdate(dataRecord);"
+			ng-disabled="updateStatus.refreshingData" >
+		  <!--<span class="glyphicon glyphicon-edit"></span>-->
+		  <i class="fa fa-pencil-square-o"</i>
+		  <span class="sr-only">Edit</span>
+	    </button></td>
+        <td ng-show="showCol['productID']"><strong>{{dataRecord["productID"]}}</strong></td>
+        <td ng-show="showCol['productName']"><strong>{{dataRecord["productName"]}}</strong></td>
+        <!--<td ng-show="showCol['productDescription']">{{dataRecord["productDescription"]}}</td>-->
+        <td ng-show="showCol['price']">{{dataRecord["price"]}}</td>
+        <td ng-show="showCol['quantity']">{{dataRecord["quantity"]}}</td>
+        <td ng-show="showCol['publishStartDate']">{{dataRecord["publishStartDate"]}}</td>
+        <td ng-show="showCol['publishEndDate']">{{dataRecord["publishEndDate"]}}</td>
+  	  </tr>
+  	</tbody>
+  	<!--
+  	<tfoot>
+  	</tfoot>
+  	-->
+    </table>
+  </div>
+  </script>
+  
+  <script type="text/ng-template" id="gridView.html">
+  <!-- Read in details -->
+  <div class="row">
+	  <!-- Business Card -->
+	  <div class="col-sm-4"
+		ng-repeat="dataRecord in displayData | filter:searchInGrid | 
+			orderBy:sort.predicate:sort.reverse">
+            <div class="panel panel-default">
+				<div class="row form-group-sm panel-body">
+					<div class="col-xs-12" ng-init="bannerURL = dataRecord['bannerURL']"><img class="img-responsive" ng-if="bannerURL!=null" ng-src="resourse/productImage/{{dataRecord['productID']}}/{{bannerURL}}"></div>
+					<div class="col-xs-12">
+						<table class="table staff-business-card">
+							<tbody>
+								<tr>
+									<td><strong>{{dataRecord["productName"]}}</strong></td>
+								</tr>
+								<!--
+								<tr>
+									<td>{{dataRecord["productDescription"]}}</td>
+								</tr>-->
+								<tr>
+									<td>{{dataRecord["price"]| currency}}</td>
+								</tr>
+                                <tr>
+                                	<td>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="CloneForUpdate(dataRecord);"
+                                        ng-disabled="updateStatus.refreshingData" >
+                                      <!--<span class="glyphicon glyphicon-edit"></span>-->
+                                      <i class="fa fa-pencil-square-o"</i>
+                                      <span class="">Edit</span>
+                                    </button></td>
+                                </tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+	  </div>
+	  <!-- End - Business Card-->
+  </div>
+  <!-- End - Read in details -->
+  </script>
+  
+  <script type="text/ng-template" id="updateRecord.html">
+  <div
+	ng-init="entityClass='form-control'; row='form-group'">
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	  <!--
+		<button type="button" class="btn btn-default btn-sm" id="{{table.name}}-back-to-table" 
+			ng-click="Update='N'; back()" 
+			ng-disabled="submitStatus.lockControl" ><i class="fa fa-reply"></i> Back</button>
+			-->
+		
+		  <button type="button" class="btn btn-default btn-sm" id="{{table.name}}-back-to-table" ng-click="UnSelectedRecord()" ng-disabled="submitStatus.lockControl"><i class="fa fa-reply"></i> Back</button>
+		<!--
+		<button type="submit" class="btn btn-default btn-sm"
+			ng-disabled="{{table.type}}_{{table.name}}.$invalid || 
+				!{{table.type}}_{{table.name}}.$dirty || 
+				isFormUnchange() || 
+				submitStatus.lockControl">
+			<i class="fa fa-floppy-o"></i> Save
+		</button>
+		-->
+		<button type="submit" class="btn btn-default btn-sm"
+			ng-disabled="
+				isFormUnchange() || 
+				submitStatus.lockControl">
+			<i class="fa fa-floppy-o"></i> Save
+		</button>
+		<span ng-show="submitStatus.isSubmitSuccess"><strong>Success!</strong> Record updated.
+        </span>
+	  </div>
+      <div class="panel-body">
+        <fieldset class="form-horizontal" ng-disabled="submitStatus.lockControl">
+			  <div class="form-group form-entity" ng-controller="uploadCtrl">
+				<label class="col-sm-3 control-label">Photo</label>
+                  <div class="col-sm-3" style="max-width: 354px;">
+				  
+					  <div id="originalImage" ng-if="updateFrom.bannerURL" ng-show="updateTo.bannerURL!=''" style="height:340px; 
+					  background: #F8F8F8;
+					  background-image:url('resourse/productImage/{{updateFrom.productID}}/{{updateFrom.bannerURL}}'); 
+					  background-size: contain;
+					  background-repeat: no-repeat;
+					  border: 5px dashed #DDD;">
+					  </div>
+					  
+					  <div ng-show="!updateFrom.bannerURL || updateTo.bannerURL == ''" ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
+					   ngf-multiple="true" ngf-accept="'image/gif,image/jpeg,image/png'" accept="'image/gif,image/jpeg,image/png'"
+					   ngf-capture="true"
+					   ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+					   ngf-allow-dir="false" class="drop-box" ngf-drop-available="true"><img class="img-responsive" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'"style="display: table-cell; vertical-align: middle;"><span ng-hide="files[0].type.indexOf('image') > -1" style="display: table-cell; vertical-align: middle;">Select File or Drop</span></div>
+                  </div>
+                  <div class="col-sm-offset-3 col-sm-3" style="clear: left;">
+				    <input
+					type="text"
+					class="form-control"
+					id="bannerURL"
+					name="bannerURL"
+					ng-model="updateTo.bannerURL"
+                    ng-change="bannerURLChanged(this)"
+                    readonly>
+                  </div>
+                  <div class="col-sm-3" ng-show="updateTo.bannerURL || files[0].type.indexOf('image') > -1">
+                    <a href="#" class="btn btn-default fa fa-trash-o" ng-click="files[0]= {};uploadImageAgain = true; updateTo.bannerURL = ''"> Delete uploaded image</a>
+                  </div>
+                  <div ng-model="submitStatus.isCreateSuccess" ng-change="files=[]">
+                  </div>
+              </div>
+			  <div class="form-group form-entity">
+				<label for="productID" class="col-sm-3 control-label">Product ID</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.productID.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="productID"
+					name="productID"
+					ng-model="updateFrom.productID"
+					readonly>
+				</div>
+				<div class="col-sm-4">
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="productName" class="col-sm-3 control-label">Product Name</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.productName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="productName"
+					name="productName"
+					maxlength="{{fields.productName.length}}"
+					ng-required="fields.productName.null"
+					ng-model="updateTo.productName">
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.productName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity" ng-controller="ckeditorCtrl">
+				<label for="productDescription" class="col-sm-3 control-label">Description</label>
+				<div class="col-sm-9" ng-class="{'has-error has-feedback' : defaultUForm.productDescription.$error.required}" 
+                    ng-init="">
+                <!--
+				  <input
+					type="text"
+					class="form-control"
+					id="productDescription"
+					name="productDescription"
+					maxlength="{{fields.productDescription.length}}"
+					ng-required="fields.productDescription.null"
+					ng-model="updateTo.productDescription">-->
+                    <!--
+                    
+                    {{
+                    ckeditorConfig = {};
+                    ckeditorConfig.filebrowserUploadUrl = 'controller/documentUploader-ckeditor.php?productID='+updateFrom.productID;
+                    ckeditorConfig.filebrowserBrowseUrl = 'third-party/ckeditor_4.5.3_full/plugins/imageuploaderV4/imgbrowser.php?productID='+updateFrom.productID;
+                    }}
+                    <textarea class="form-control" rows="50" id="productDescription" name="productDescription" ng-model="updateTo.productDescription" ck-editor ck-editor-config="{{ckeditorConfig}}" config="ckeditorConfig" ></textarea>
+                    -->
+                    <ck-editor ng-model="updateTo.productDescription" ck-config="ckConfig" filebrowser-upload-url="" filebrowser-browse-url="updateFrom.productID"></ck-editor>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.productDescription.$error.required"></span>
+				</div>
+				<div class="col-sm-4 sr-only">
+				  <label class="text-danger control-label" ng-show="defaultUForm.productDescription.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="publishStartDate" class="col-sm-3 control-label">Publish start from</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.publishStartDate.$error.required}">
+				  <input
+					type="date"
+					class="form-control"
+					id="publishStartDate"
+					name="publishStartDate"
+					maxlength="{{fields.publishStartDate.length || 65536}}"
+					ng-required="fields.publishStartDate.null"
+					ng-model="tempDate['dateObject']['publishStartDate']"
+					ng-change="convertDateToString(tempDate['dateObject']['publishStartDate'], 'publishStartDate', 'date')"
+					style="  line-height: initial;">
+				<input
+					type = "text"
+					readonly = "readonly"
+					class="sr-only"
+					ng-model="updateTo.publishStartDate"
+					>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.publishStartDate.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.publishStartDate.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="publishEndDate" class="col-sm-3 control-label">Publish end of</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.publishEndDate.$error.required}">
+				  <input
+					type="date"
+					class="form-control"
+					id="publishEndDate"
+					name="publishEndDate"
+					maxlength="{{fields.publishEndDate.length || 65536}}"
+					ng-required="fields.publishEndDate.null"
+					ng-model="tempDate['dateObject']['publishEndDate']"
+					ng-change="convertDateToString(tempDate['dateObject']['publishEndDate'], 'publishEndDate', 'date')"
+					style="  line-height: initial;">
+				<input
+					type = "text"
+					readonly = "readonly"
+					class="sr-only"
+					ng-model="updateTo.publishEndDate"
+					>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.publishEndDate.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.publishEndDate.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="price" class="col-sm-3 control-label">Price</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.price.$error.required}">
+				  <input
+					type="number"
+					class="form-control"
+					id="price"
+					name="price"
+					maxlength="{{fields.price.length}}"
+					ng-required="fields.price.null"
+					ng-model="updateTo.price">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.price.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.price.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="quantity" class="col-sm-3 control-label">Quantity</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.quantity.$error.required}">
+				  <input
+					type="number"
+					class="form-control"
+					id="quantity"
+					name="quantity"
+					maxlength="{{fields.quantity.length}}"
+					ng-required="fields.quantity.null"
+					ng-model="updateTo.quantity">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.quantity.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.quantity.$error.required">Required</label>
+				</div>
+			  </div>
+              <!--
+			  <div class="form-group form-entity">
+				<label for="email" class="col-sm-3 control-label">Email</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : defaultUForm.email.$error.required}">
+				  <input
+					type="email"
+					class="form-control"
+					id="email"
+					name="email"
+					maxlength="{{fields.email.length}}"
+					ng-required="fields.email.null"
+					ng-model="updateTo.email">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="defaultUForm.email.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="defaultUForm.email.$error.required">Required</label>
+				</div>
+			  </div>
+              -->
+	    </fieldset>
+      </div><!-- panel body end -->
+    </div><!-- panel end -->
+  </div>
+  </script>
+</div>

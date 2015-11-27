@@ -1,0 +1,147 @@
+﻿            
+  <fieldset ng-disabled="submitStatus.lockControl">
+			<input hidden name="table" ng-value="table.name">
+			<input hidden name="crud-type" ng-value="table.type">
+			  <div class="form-group form-entity">
+				<label for="email" class="col-sm-2 control-label">Email</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.email.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="email"
+					name="email"
+					maxlength="{{fields.email.length}}"
+					ng-required="fields.email.null"
+					ng-model="create.email">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.email.$error.required"></span>
+				  <span class="help-block">e.g yourFBac@email.com</span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.email.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="password" class="col-sm-2 control-label">Password</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.password.$error.required}">
+				  <input
+					type="password"
+					class="form-control"
+					id="password"
+					name="password"
+					ng-required="1"
+					ng-model="create.password">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.password.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.password.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="password2" class="col-sm-2 control-label">Password confirm</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.password2.$error.required}">
+				  <input
+					type="password"
+					class="form-control"
+					id="password2"
+					name="password2"
+					ng-required="1"
+					ng-model="create.password2">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.password2.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.password2.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="fishbowlID" class="col-sm-2 control-label">Fish ID</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.fishbowlID.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="fishbowlID"
+					name="fishbowlID"
+					maxlength="{{fields.fishbowlID.length}}"
+					ng-required="fields.fishbowlID.null"
+					ng-model="create.fishbowlID">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.fishbowlID.$error.required"></span>
+				  <span class="help-block">e.g please refer to your fishbowlID</span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.fishbowlID.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="FullName" class="col-sm-2 control-label">Full Name</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.FullName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="FullName"
+					name="FullName"
+					ng-required="fields.FullName.null"
+					ng-model="create.FullName">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.FullName.$error.required"></span>
+				  <span class="help-block">e.g Chan Tai Men</span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.FullName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="nickName" class="col-sm-2 control-label">Nick Name</label>
+				<div class="col-sm-6" ng-class="{'has-error has-feedback' : cProfile.nickName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="nickName"
+					name="nickName"
+					maxlength="{{fields.nickName.length}}"
+					ng-required="fields.nickName.null"
+					ng-model="create.nickName">
+				  <span class="help-block">e.g this will be your name show to anyone</span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.FullName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="Gender" class="col-sm-2 control-label">Gender</label>
+				<div class="col-sm-6">
+                  <select
+					class="form-control"
+					id="gender"
+					name="Gender"
+					ng-required="fields.gender.null"
+					ng-model="create.gender">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="I">Intersex</option>
+                  </select>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="dateOfBirth" class="col-sm-2 control-label">Date of Birth</label>
+				<div class="col-sm-6">
+				  <input
+					type="date"
+					class="form-control"
+					id="dateOfBirth"
+					name="dateOfBirth"
+					maxlength="{{fields.dateOfBirth.length || 65536}}"
+					ng-model="create.dateOfBirth">
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="address" class="col-sm-2 control-label">Correspondence Address</label>
+				<div class="col-sm-6">
+				  <input
+					type="text"
+					class="form-control"
+					id="address"
+					name="address"
+					maxlength="{{fields.address.length || 65536}}"
+					ng-required="fields.address.null"
+					ng-model="create.address">
+				</div>
+			  </div>
+			</fieldset>

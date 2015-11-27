@@ -1,32 +1,15 @@
 
 var app = angular.module("CRUD-update", []);
 
-app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $element, $attrs, $log, $filter) {
+var ctrlUpdate = app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $element, $attrs, $log, $filter) {
 
 	// type = crud type[create/read/update/delete]
-	$scope.table.type = $attrs.type;
+	//$scope.table.type = $attrs.type;
 	
 	// table = tableName
-	$scope.table.name = $attrs.table;
-	/*
-	 *	defaultPath = [default/custom]
-	 *		default = root/Templates/crud-type.html
-	 *		custom 	= root/Templates/crud/crud-type-table.html
-	 */
-	$scope.defaultPath = $attrs.defaultPath;
+	//$scope.table.name = $attrs.table;
 	
-	// table structure in array for default template use to repeat the form control
-	/*
-	 * format = {
-	 *   "fieldName": {
-	 *    "type": "int(10)",
-	 *    "length": "10",
-	 *    "null": 1,
-	 *    "default": null
-	 *	}, ...
-	 * }
-	 */
-	//$scope.fields = {};
+	$scope.GetCRUDActionType($element, $attrs);
 	
 	/*
 	 *	control the default template, hidden can hide the
@@ -37,6 +20,9 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 	*/
 	$scope.label = {};
 	$scope.hidden = [];
+
+	$scope.view = 'T';
+	$scope.Update = 'N';
 	
 	// store the date object of form control
 	$scope.tempDate = {};
@@ -45,8 +31,29 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 	
 	$scope.formData = $scope.read;
 	
-	$scope.displayData = {};
+	$scope.dataSource = [];
+	// 20150609, keithpoon, fixed: ng filter require a array
+	$scope.displayData = [];
 	$scope.displayError = {};
+
+	// pagination
+	$scope.selectedRecord = {};
+	$scope.pointedRecord = {};
+	$scope.step = 10;
+	$scope.stepOption = [
+		{numOfStep:5},
+		{numOfStep:10},
+		{numOfStep:25},
+		{numOfStep:50}
+	];
+	$scope.uploadImageAgain=false;
+
+	$scope.pageSize = 5; // now unused, max to show how many page button
+	$scope.currentPageNum = -1;
+	$scope.maxPageNum = -1;
+
+	$scope.isPointAtStart = false;
+	$scope.isPointAtEnd = false;
 	
 	// table sortable function
 	$scope.sort = {}
@@ -58,107 +65,29 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 	$scope.isUpdateFormUnchange = false;
 		
 	// get table structure for gen table tree node
-	
-	if($rootScope.table[$scope.table.name] == null){
+	if(typeof($rootScope.table[$scope.table.name]) == "undefined"){
 		$scope.GetTableSchema($scope.table.type);
-	/*
-		$http(
-			{
-				method:"POST",
-				url:$rootScope.controller+"simple-selectTableStructure.php",
-				params:{table:$scope.table.name},
-				responseType:'json'
-			}).
-			success(function(data, status, headers, config) {
-				//console.dir(data);
-				// this callback will be called asynchronously
-				// when the response is available
-				$scope.dataSchema = data.data;
-				for(i=0; i<data.data.length; i++){
-					var field = data.data[i];
-					// assign the field name
-					$scope.fields[field.Field] = {};
-					// assign the field data type
-					var columnType = field.Type;
-					if(columnType.indexOf("(") == -1){
-						$scope.fields[field.Field]["type"] = field.Type;
-					}else{
-						$scope.fields[field.Field]["type"] = field.Type.substr(0, field.Type.indexOf("("))
-					}
-					// assign the field length
-					//var pureType = $scope.fields[field.Field]["type"];
-					$scope.fields[field.Field]["length"] = null;
-					if(columnType.indexOf("(") >-1){
-						$scope.fields[field.Field]["length"] = field.Type.substring(field.Type.indexOf('(')+1, field.Type.indexOf(')') );
-					}else{
-						switch(columnType){
-							// numeric data type
-							case "int":
-								break;
-							case "double":
-								break;
-							case "decimal":
-								break;
-							case "float":
-								break;
-							// date and time data type, must assign new Date() object if using HTML5 something like input[date]
-							case "date":
-							case "datetime":
-							case "timestamp":
-							case "time":
-								//$scope.update[field.Field] = new Date();
-								//$scope.updateTo[field.Field] = new Date();
-								//$scope.updateFrom[field.Field] = new Date();
-								$scope.updateTo[field.Field] = {};
-								$scope.updateTo[field.Field].year=0
-								$scope.updateTo[field.Field].month=0
-								$scope.updateTo[field.Field].day=0
-								$scope.updateTo[field.Field].hours=0
-								$scope.updateTo[field.Field].minutms=0
-								$scope.updateTo[field.Field].seconds=0
-								
-								break;
-							// string type
-							case "char":
-								break;
-							case "varchar":
-								break;
-							case "tinytext":
-								$scope.fields[field.Field]["length"] = 255;
-								break;
-							case "text":
-							case "blob":
-								$scope.fields[field.Field]["length"] = 65536;
-								break;
-							case "mediumtext":
-							//MEDIUMBLOB, MEDIUMTEXT   L + 3 bytes, where L < 2^24   (16 Megabytes)
-								$scope.fields[field.Field]["length"] = 65536;
-								break;
-							case "longtext":
-							//LONGBLOB, LONGTEXT       L + 4 bytes, where L < 2^32   (4 Gigabytes)
-								$scope.fields[field.Field]["length"] = 65536;
-								break;
-						}
-					}
-					
-					// assign the key type
-					// may be no need
-					// assign is nullable
-					$scope.fields[field.Field]["null"] = 0;
-					if(field.Null == "NO")
-						$scope.fields[field.Field]["null"] = 1;
-					// assign the default value
-					$scope.fields[field.Field]["default"] = field.Default;
-				}
-				$rootScope.table[$scope.table.name] = data.data;
-			}).
-			error(function(data, status, headers, config) {
-				// called asynchronously if an error occurs
-				// or server returns response with an error status.
-				$scope.data = "fail";
-			});
-			*/
 	}
+	
+	/*
+	 *	When the same get table schema request are sent and wait for the response,
+	 *	the next same name of table schema request will not sent, now will watch and
+	 *	wait for the response.
+	 */
+	$rootScope.$watch(
+		function($rootScope){
+			return $rootScope.tableSource[$scope.table.name];
+		}, function(newVal, oldVal){
+		if(typeof(newVal) != "undefined" ){
+			if(typeof(newVal)=="string"){
+				if(newVal != null && newVal!=""){
+					$scope.ConvertSchema2Fields(newVal)
+				}
+			}else{
+				$scope.ConvertSchema2Fields(newVal)
+			}
+		}
+	})
 	
 	$scope.DisableRefreshButton = function(){
 		$scope.updateStatus.disableRefresh = true;
@@ -181,32 +110,140 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 				responseType	:	'json'
 			}).
 			success(function(data, status, headers, config) {
-				$scope.displayData = data.data;
+				//$scope.displayData = data.data;
+				$scope.dataSource = data.data;
 				$scope.EnableRefreshButton();
+
+				$scope.PointToPage(1);
 			}).
 			error(function(data, status, headers, config) {
 				$scope.displayError = data;
 				$scope.EnableRefreshButton();
 			});
 	}
+
+	$scope.StepChanged = function(test){
+		console.dir(test)
+
+	}
+
+	// pageNum: one based
+	$scope.PointToPage = function(pageNum){
+		$scope.FindMaxPageNum();
+		var isPointAtStart = false;
+		var isPointAtEnd = false;
+		var maxPageNum = $scope.maxPageNum;
+
+		$scope.currentPageRecords = [];
+			$scope.displayData = [];
+			
+		if(maxPageNum<=0){
+			$scope.isPointAtStart = isPointAtStart;
+			$scope.isPointAtEnd = isPointAtEnd;
+			return;
+		}
+		var totalDataRows = $scope.dataSource.length;
+
+		var step = $scope.step;
+		var rowStart = step*(pageNum-1);
+		var rowEnd = step*pageNum;
+
+		for(i=rowStart; i<rowEnd; i++){
+			//$scope.displayData[$scope.displayData.length] = $scope.dataSource[rowStart];
+			if(i>=totalDataRows)
+				break;
+
+			$scope.displayData[$scope.displayData.length] = $scope.dataSource[i];
+		}
+		$scope.currentPageNum = pageNum;
+
+		if($scope.currentPageNum==1)
+			isPointAtStart = true;
+
+		if($scope.currentPageNum == $scope.maxPageNum)
+			isPointAtEnd = true;
+
+		$scope.isPointAtStart = isPointAtStart;
+		$scope.isPointAtEnd = isPointAtEnd;
+
+	}
+
+	$scope.PointToNextPage = function(){
+		var curPageNum = $scope.currentPageNum;
+		var totalDataRows = $scope.dataSource.length;
+		var maxPageNum = $scope.maxPageNum;
+
+		if(curPageNum<maxPageNum)
+			$scope.PointToPage(curPageNum + 1);
+	}
+	$scope.PointToPreviousPage = function(){
+		var curPageNum = $scope.currentPageNum;
+		if(curPageNum>1)
+			$scope.PointToPage(curPageNum - 1);
+	}
+
+	$scope.PointToFirstPage = function(){
+		$scope.PointToPage(1);
+	}
+
+	$scope.PointToLastPage = function(){
+		$scope.PointToPage($scope.maxPageNum);
+	}
+
+	$scope.FindMaxPageNum = function(){
+		var totalDataRows = $scope.dataSource.length;
+		var step = $scope.step;
+
+		var maxPageNum = 0;
+		if(totalDataRows!=0)
+			if(totalDataRows%step==0)
+				maxPageNum = totalDataRows/step;
+			else
+				maxPageNum = Math.floor(totalDataRows/step)+1;
+
+		$scope.maxPageNum = maxPageNum;
+		if(totalDataRows<=0)
+			console.log("Update Ctrl: Data source length is 0")
+	}
+	
+	$scope.PointToRecord = function($event, pointedRecord){
+		var $element = $($event.currentTarget);
+		var $parent = $element.parent();
+
+		$parent.children("tr").removeClass("info");
+
+		$element.addClass("info")
+
+		$scope.pointedRecord = pointedRecord;
+	}
+	
+	$scope.DoubleClickAndPointToRecord = function($event, pointedRecord){
+
+		$scope.PointToRecord($event, pointedRecord);
+
+		$scope.PointToRecordConfirm();
+	}
+
+	$scope.PointToRecordConfirm = function(){
+		$scope.selectedRecord = $scope.pointedRecord;
+	}
 	
 	$scope.test = function(){
-		//$log.log($scope.updateTo)
-		//$log.log($scope.updateFrom)
-		$scope.isFormUnchange();
+		$log.log("lockControl: "+$scope.submitStatus.lockControl)
+		$log.log($scope.isFormUnchange());
 	}
 	
 	$scope.CloneForUpdate = function(updateDataPack){
+		$scope.uploadImageAgain = false;
 		$scope.Update = "Y";
-		
 		angular.forEach( $scope.dataSchema, function( field, fieldIndex  ) {
 			var fieldName = field.Field;
 			
 			var value = updateDataPack[fieldName]
-			var columnType = $scope.fields[fieldName].type//$scope.fields[name]['type'];
+			var columnType = $scope.fields[fieldName].type;
 			var isTrouble = false;
 			var dateInText = value;
-			
+
 			switch(columnType){
 				case "date":
 				case "datetime":
@@ -218,6 +255,10 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 			}
 			
 			if(isTrouble){
+				if(!dateInText){
+				$scope.tempDate['dateObject'][fieldName] = new Date();
+				}else{
+
 				//var tempDate = new Date();
 				
 				var tempYear = 1900;
@@ -270,63 +311,62 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 				tempMinutms = parseInt(tempMinutms);
 				tempSeconds = parseInt(tempSeconds);
 				
-				/*
-				tempDate.setFullYear(tempYear);
-				tempDate.setMonth(tempMonth);
-				tempDate.setDate(tempDay);
-				
-				tempDate.setHours(tempHours);
-				tempDate.setMinutes(tempMinutms);
-				tempDate.setSeconds(tempSeconds);
-				*/
-				
-				//$scope.updateTo[name] = new Date();
-				//$scope.updateTo[name] = tempDate;
-				
 				$scope.tempDate['dateObject'][fieldName] = new Date(tempYear, tempMonth, tempDay, tempHours, tempMinutms, tempSeconds);
 				
+				}
 				$log.log($scope.tempDate['dateObject'][fieldName])
-				/*
-				$scope.updateTo[fieldName].year = tempYear;
-				$scope.updateTo[fieldName].month = tempMonth;
-				$scope.updateTo[fieldName].day = tempDay;
-				
-				$scope.updateTo[fieldName].hours = tempHours;
-				$scope.updateTo[fieldName].minutms = tempMinutms;
-				$scope.updateTo[fieldName].seconds = tempSeconds;
-				
-				console.dir($scope.updateTo[fieldName])
-				console.log($scope.updateTo[fieldName].year)
-				*/
+
 				$scope.convertDateToString($scope.tempDate['dateObject'][fieldName], fieldName, columnType);
 			}else{
 				//$scope.updateFrom[fieldName] = value;
 				$scope.updateTo[fieldName] = value
 			}
 		});
-		
+
 		$scope.updateFrom = angular.copy(updateDataPack);
+		console.log("clone data for update")
+		console.dir($scope.updateFrom);
+
+		$scope.isFormUnchange();
+
+		$scope.AfterCloneForUpdate();
 	}
-		$scope.isFormUnchange = function(){
-			var isFormChanged = angular.equals($scope.updateFrom, $scope.updateTo);
-			// may be we need to handle the null equal to empty problem?
-			/*
-			if(!isFormChanged){
-				var isSame = true;
-				for(index in $scope.updateFrom){
-					if($scope.updateFrom[index]==null){
-						if($scope.updateTo == null || $scope.updateTo==""){
+	$scope.AfterCloneForUpdate = function(){
+		
+	}
+
+
+	$scope.UnSelectedRecord = function(){
+		$scope.Update = 'N';
+		$log.log($scope.view)
+	}
+	$scope.isFormUnchange = function(){
+
+
+		var isFormChanged = false;
+		var isSame = true;
+
+		for(index in $scope.updateFrom){
+			if(typeof($scope.reservedFields[index])== "undefined"){
+				isSame = $scope.updateFrom[index] == $scope.updateTo[index];
+				if(!isSame){
+					var isEmpty = true;
+					if($scope.updateFrom[index] == null || $scope.updateFrom[index]==""){
+						if($scope.updateTo[index] == null || $scope.updateTo[index]==""){
+							$scope.updateTo[index] = "";
 							isSame = true;
-						}else{
-							isSame = false;
 						}
 					}
 				}
-				isFromChanged = isSame;
+				if(!isSame){
+					isFormChanged = true;
+					break;
+				}
 			}
-			*/
-			return isFormChanged;
 		}
+
+		return !isFormChanged;
+	}
 	
 	$scope.convertDateToString = function(fromModel, fieldName, type){
 		var format = "";
@@ -347,7 +387,19 @@ app.controller('CRUD-update-controller', function($scope, $rootScope, $http, $el
 		$scope.updateTo[fieldName] = $filter('date')(fromModel, format);  // for type="date" binding
 	}
 	
-	$scope.RefreshData();
+	$rootScope.$watch(
+		function(){return $rootScope.getSchemaStatus[$scope.table.name]},
+		function(newValue, oldValue){
+			if ( newValue !== oldValue )
+			if($rootScope.getSchemaStatus[$scope.table.name]=="ok"){
+				$scope.RefreshData();
+			}else{
+				console.warn("Update Controller: ");
+				console.warn("Obtain table structure 'fail', cancel to read data from table "+$scope.table.name);
+			}
+		}
+	);
+	
 	//console.log("Controller<crud crud-read-controller> - executed.");
 	$log.info("Controller<crud crud-read-controller> - executed.");
 });

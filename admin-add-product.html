@@ -1,0 +1,285 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/bootstrap-t.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minmum-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>ACMS |</title>
+<!-- InstanceEndEditable -->
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="third-party/font-awesome-4.4.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/controllerCRUD.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-create.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-read.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-update.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-delete.js"></script>
+<script type="text/javascript" src="js/controller-listwin.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<link rel="stylesheet" type="text/css" href="css/uploadControl.css">
+<script type="text/javascript" src="js/securityControl.js"></script>
+<script type="text/javascript">
+//var app2 = angular.module('myApp', ['ngFileUpload']);
+app.controller('uploadCtrl', function ($scope, $http, $timeout, $compile, Upload) {
+	$scope.files = [];
+	
+	// clear the image preview after create success
+	$scope.$parent.$watch("submitStatus.isCreateSuccess", function(newVal, oldVal){		
+		if(!newVal && oldVal)
+			$scope.files = [];
+	});
+	
+    $scope.$watch('files', function (files) {
+		//console.dir(files)
+		
+        $scope.formUpload = false;
+
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.uploadPic = function (files) {
+        $scope.formUpload = true;
+        if (files != null) {
+            upload(files[0])
+        }
+    };
+
+    function upload(file) {
+        file.upload = Upload.upload({
+            url: 'controller/documentUploader.php',
+            method: 'POST',
+            headers: {
+                'my-header': 'my-header-value'
+            },
+            fields: {username: $scope.username},
+            file: file,
+            fileFormDataName: 'uploadedFiles'
+        });
+
+        file.upload.then(function (response) {
+			// assign the uploaded file name to model
+			$scope.create.bannerURL = response.data.name;
+            $timeout(function () {
+                file.result = response.data;
+            });
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+});
+
+  </script>
+<script>
+$(function() {
+	
+});
+</script>
+<script>  
+app.controller('listwin-copyDetails', function($rootScope, $scope, $http, $element, $attrs, $log) {
+	$scope.$watch('selectedRecord', function(newValue, oldValue) {
+		$scope.create.supervisor = newValue.staffID
+	});
+});
+</script>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar">
+  <!-- InstanceBeginEditable name="topbar" -->
+  <!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header start -->
+<div id="header">
+  <div id="header_title">
+    <!-- InstanceBeginEditable name="header" -->
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div id="comapny_icon_container" class="navbar-brand">
+        <a href="index.html"></a>
+        <span class="hidden-xs">sponline 藥房</span>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img id="profile_icon" src="images/people.png"><span class="user_nickName">Nick Name</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="main-menu.html">Admin Main Page</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Change Password</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="controller/user-logout-redirect.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header end -->
+<!-- site position start -->
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+<ul>
+  <li><a href="http://localhost/sponline">首頁</a></li>
+  <li><a href="main-menu.html">管理員目錄</a></li>
+  <li>新增產品</li>
+</ul>
+</div>
+<!-- InstanceEndEditable -->
+<!-- site position end -->
+<!-- InstanceBeginEditable name="intro" -->
+<div id="intro" class="container panel panel-default">
+  <div id="intro_left" class="panel-body"></div>
+  <div id="intro_right" class="panel-body"></div>
+</div>
+<!-- InstanceEndEditable -->
+<div id="content" class="container">
+  <!-- InstanceBeginEditable name="content" -->
+  <div class="panel">
+  	<div ng-controller="CRUD-container" class="crud-container">
+    <!-- 
+		  <textarea class="sr-only" readonly rows="10" cols="20" class="form-control" ng-bind="definition | json" ng-init="definition={hidden:['userID','imagePath'],label:{
+		  staffID:'Staff ID',
+		  lastName:'Last Name',
+		  firstName:'First Name',
+		  fullName:'Full Name',
+		  position:'Position',
+		  nickName:'Nick Name',
+		  gender:'Gender',
+		  dateOfBirth:'Date of Birth',
+		  supervisor:'Supervisor',
+		  contactNo1:'Contact no.1',
+		  contactNo2:'Contact no.2',
+		  email:'Email',
+		  address:'Correspondence Address',
+		  imagePath:'Photo'
+		  }
+		  }">
+		  </textarea> -->
+		  <br>
+		<div>
+		  <form name="cProfile" class="form-horizontal" role="form" ng-submit="Submit()" ng-model="createFormName">
+			<input hidden type="text" ng-model="action" ng-init="action = 'controller/admin-createStaffProfile.php'">
+			<input hidden type="text" ng-model="method" ng-init="method = 'POST'">
+			<input hidden type="text" ng-model="createFormName" ng-init="createFormName = 'cProfile'">
+            <!--
+            <button type="button" ng-click="test()">Click</button>
+            <textarea ng-model="create | json" rows="10" cols="30"></textarea>-->
+              <crud table="product" custom-template="admin-add-staff-profile.html" controller="CRUD-create-controller">
+              </crud>
+              
+			  <div class="form-group form-entity">
+				<div class="col-sm-2 control-label">
+              <button
+				type="submit"
+				class="btn btn-primary"
+				ng-disabled="cProfile.$invalid || !cProfile.$dirty || submitStatus.lockControl">Create</button>
+				</div>
+				<div class="col-sm-10">
+				<span style="display:none;">{{cProfile.$error | json}}</span><br>
+				<div class="alert alert-success" role="alert" style="margin-bottom: 0px;" ng-show="submitStatus.isCreateSuccess">
+                  <strong>Success!</strong> Table '{{table.name}}', {{submitStatus.keyValue[0]}} record created.
+                </div>
+				<div class="alert alert-warning" role="alert" style="margin-bottom: 0px;" ng-show="submitStatus.isCreateFail">
+                  <strong>Sorry!</strong> the record created with unsuccessful.
+                </div>
+				<div class="alert alert-danger" role="alert" style="margin-bottom: 0px;" ng-show="submitStatus.isConnectionError">
+                  <strong>Connect Error!</strong> please try again. Details: <code>{{submitStatus.phpError}}</code>
+                </div>
+				</div>
+                <div class="" ng-model="submitStatus.isSuccess" ng-change="afterSubmitSuccess(submitStatus.isSuccess)">
+                </div>
+			  </div>
+		  </form>
+		</div>
+    </div>
+  </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+<footer>
+  <div id="team_member_backgroup">
+    <div id="team_member">
+      <ol>
+        <li>網站地圖︰
+          <nav>
+            <ul>
+              <li>家庭用品</li>
+              <li>浴室用品</li>
+              <li>獨立專區</li>
+              <li>嬰兒專區</li>
+              <li>長者專區</li>
+              <li>衛生防護用品</li>
+            </ul>
+          </nav>
+        </li>
+        <li>關於本店:
+          <nav>
+            <ul>
+              <li><a href="#">商店資訊</a></li>
+              <li><a href="#">付款須知</a></li>
+              <li><a href="#">私隱聲明</a></li>
+              <li><a href="#">聯絡我們</a></li>
+            </ul>
+          </nav>
+        </li>
+        <li style="display: none;">You may contact us by using the following information 
+          or sending us a message via our contact form.
+          <nav>
+            <ul>
+              <li>Tel: 2900 0000</li>
+              <li>Email: admin@hrms.com.hk</li>
+            </ul>
+          </nav>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <div id="copyright"> Copyright © 2015. All Rights Reserved. </div>
+</footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>

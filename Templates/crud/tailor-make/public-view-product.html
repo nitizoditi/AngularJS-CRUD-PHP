@@ -1,0 +1,268 @@
+<!-- Use .container-fluid for a full width container, spanning the entire width of your viewport. -->
+<div class="container-fluid">
+  <div style="display:none;" ng-init="view='G';">
+  {{
+  	systemFields = [
+  		"createDate",
+  		"createUser",
+  		"lastUpdateDate",
+  		"lastUpdateUser",
+  		"systemUpdateDate",
+  		"systemUpdateUser",
+  		"systemUpdateProgram"
+  	];
+  }}
+  </div>
+  <div>
+    <div class="form-horizontal" role="form">
+	<div class="form-group has-feedback">
+	  <div class="col-sm-5">
+	  <input type="text" name="searchInGrid" class="form-control" ng-model="searchInGrid">
+	  <span class="glyphicon glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>
+	  </div>
+	  <div class="col-sm-4">
+		  <div class="form-inline">
+			<button type="button" class="btn btn-default {{table.name}}-refresh-data refresh-data" id="{{table.name}}-refresh-data" 
+			ng-click="RefreshData();" 
+			ng-disabled="updateStatus.disableRefresh"
+			>
+			<span class="glyphicon glyphicon glyphicon-refresh"
+				ng-class="{'fa-spin':updateStatus.refreshingData}"></span>
+			<span class="sr-only">Refresh</span>
+			</button>
+			
+					<button type="button" class="btn btn-default" ng-click="PointToFirstPage()" ng-disabled="isPointAtStart">
+					<span class="fa fa-angle-double-left"></span>
+					<span class="sr-only">First</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToPreviousPage()" ng-disabled="isPointAtStart">
+					<span class="fa fa-angle-left"></span>
+					<span class="sr-only">Previous</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToNextPage()" ng-disabled="isPointAtEnd">
+					<span class="fa fa-angle-right"></span>
+					<span class="sr-only">Next</span>
+					</button>
+
+					<button type="button" class="btn btn-default" ng-click="PointToLastPage()" ng-disabled="isPointAtEnd">
+					<span class="fa fa-angle-double-right"></span>
+					<span class="sr-only">Last</span>
+					</button>
+			<!-- max records on page -->
+			<!--
+			<select name="step" class="form-control" ng-model="step" ng-change="StepChanged(this)">
+			  <option value="5">5</option>
+			  <option value="10">10</option>
+			  <option value="25">25</option>
+			  <option value="50">50</option>
+			</select>
+			-->
+			<!--
+			<select ng-model="step" ng-option="tempOption.numOfStep for tempOption in stepOption">
+			</select>
+			-->
+			<button type="button" class="btn btn-default" ng-click="view='T'" ng-hide="view=='T'" ng-disabled="displayData.length==0">
+			<span class="glyphicon glyphicon-list"></span>
+			<span class="sr-only">Table View</span>
+			</button>
+			<button type="button" class="btn btn-default" ng-click="view='G'" ng-hide="view=='G'" ng-disabled="displayData.length==0">
+			<span class="glyphicon glyphicon-th-large"></span>
+			<span class="sr-only">Grid View</span>
+			</button>
+		  </div>
+	  </div>
+	  <div class="col-sm-3">
+		
+		<!-- show/hide column -->
+		<!--
+		<div class="panel panel-default" ng-show="view=='T'" style="position: absolute;
+  width: 100%;
+  left: 0px;
+  z-index: 10;">
+		<div class="panel-heading" style="padding: 0px;" ng-init="showHidePanel=false">
+	    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-click="showHidePanel=!showHidePanel" style="width: 100%;">
+	  	  Show / Hide Column
+	    </button>
+		</div>
+		<div class="panel-body" style="padding:0px;" ng-show="showHidePanel" style="-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(148, 149, 149, 0.6); box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(148, 149, 149, 0.6);">
+		<div>
+		  <div
+		    ng-repeat="field in dataSchema"
+		    ng-init="name=field.Field;label=definition.label[name] ? definition.label[name] : name;">
+			  <div ng-if="definition.hidden.indexOf(name) == -1 && systemFields.indexOf(name)==-1">
+				<button 
+					type="button" 
+					class="btn btn-link showOrHideColumn" 
+					ng-init="showCol[name] = true" 
+					ng-click="showCol[name]=!showCol[name]" 
+					ng-class="{hideColOnTable:showCol[name]==false}"
+					style="width: 100%;text-align: left;">
+				<i class="fa fa-eye" ng-show="showCol[name]"></i>
+				<i class="fa fa-eye-slash" ng-show="!showCol[name]"></i>
+				{{label}}</button>
+			  </div>
+		  </div>
+		</div>
+		</div>
+		</div>
+		-->
+	  </div>
+  <!--<pre>Sorting predicate = {{sort.predicate}}; reverse = {{sort.reverse}}</pre>
+  <hr/>
+  [ <a href="" ng-click="predicate=''">unsorted</a> ] -->
+	</div>
+	</div>
+  </div>
+        <ng-include src="'pageButton.html'"></ng-include>
+			<div ng-hide="view!='T' || isSelectedRecord==true" ng-show="isSelectedRecord == false && view=='T'">
+        <ng-include src="'tableView.html'"></ng-include>
+			</div>
+			
+			<div ng-hide="view!='G' || isSelectedRecord==true" ng-show="isSelectedRecord == false && view=='G'">
+        <ng-include src="'gridView.html'"></ng-include>
+			</div>
+			
+			<div >
+			<ng-include src="'details.html'" ng-show="isSelectedRecord == true"></ng-include>
+			</div>
+			
+		<div ng-controller="contactFormContainer">
+		</div>
+</div>
+
+  
+  <script type="text/ng-template" id="pageButton.html">
+  <div>
+  <p class="text-center">
+  	<a href="#/page/{{index+1}}" class="btn btn-link btn-sm" ng-repeat="index in [] | forLoop:maxPageNum"><u>{{index+1}}</u></a>
+  </p>
+  </div>
+  </script>
+  
+  <script type="text/ng-template" id="tableView.html">
+  <div class="table-entities table-responsive" ng-init="sort.reverse=false; sort.predicate=''">
+    <table class="table">
+  	<tbody>
+  	  <tr ng-repeat="dataRecord in displayData | filter:searchInGrid | 
+			orderBy:sort.predicate:sort.reverse">
+			<td>
+			<div class="col-xs-3" ng-init="bannerURL = dataRecord['bannerURL']"><img class="img-responsive" ng-if="bannerURL!=null" ng-src="resourse/productImage/{{dataRecord['productID']}}/{{bannerURL}}"></div>
+			<div class="col-xs-9">
+				<div class="text-over">
+				{{dataRecord["productName"]}}
+				</div>
+				<div>
+				{{dataRecord["price"] | currency}}
+				</div>
+				<div>
+					<button class="btn btn-link" ng-click="DoubleClickAndPointToRecord($event, dataRecord)">...More</button>
+				</div>
+			</div>
+			</td>
+  	  </tr>
+  	</tbody>
+  	<!--
+  	<tfoot>
+  	</tfoot>
+  	-->
+    </table>
+  </div>
+  </script>
+  
+  <script type="text/ng-template" id="gridView.html">
+  <!-- Read in details -->
+  <div class="row">
+	  <!-- Business Card -->
+	  <div class="col-sm-6"
+		ng-repeat="dataRecord in displayData | filter:searchInGrid | 
+			orderBy:sort.predicate:sort.reverse">
+            <div class="panel panel-default">
+				<div class="row form-group-sm panel-body">
+					<div class="col-xs-12" ng-init="bannerURL = dataRecord['bannerURL']"><img class="img-responsive" ng-if="bannerURL!=null" ng-src="resourse/productImage/{{dataRecord['productID']}}/{{bannerURL}}"></div>
+					<div class="col-xs-12">
+						<table class="table staff-business-card">
+							<tbody>
+								<tr>
+									<td><strong>{{dataRecord["productName"]}}</strong></td>
+								</tr>
+								<!--
+								<tr>
+									<td>{{dataRecord["productDescription"]}}</td>
+								</tr>-->
+								<tr>
+									<td>{{dataRecord["price"]| currency}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-xs-12 text-right">
+					<button class="btn btn-link" ng-click="DoubleClickAndPointToRecord($event, dataRecord)">...More</button>
+					</div>
+				
+				</div>
+			</div>
+	  </div>
+	  <!-- End - Business Card-->
+  </div>
+  <!-- End - Read in details -->
+  </script>
+  
+  <script type="text/ng-template" id="details.html">
+  <!-- Read in details -->
+  <div class="row">
+	  <!-- Display One Record -->
+	  <div class="col-xs-12">
+		<p class="text-left">
+		  <!--<button class="btn btn-default" ng-click="UnSelectedRecord();">Back</button>-->
+		  <button class="btn btn-default"  ng-click="UnSelectedRecord()">Back</button>
+		</p>
+	  </div>
+	  <h3>{{selectedRecord["productName"]}}</h3>
+            <div class="panel panel-default">
+				<div class="row form-group-sm panel-body">
+					<div class="col-xs-12">
+					 <div dynamic-html="selectedRecord['productDescription']"></div>
+					 <!--<div ng-bind-html-unsafe="selectedRecord['productDescription']"></div>-->
+					 <!--<dynamic-html ng-model="selectedRecord['productDescription']"></dynamic-html>-->
+					</div>
+					<div class="col-xs-12">
+					{{selectedRecord["description"]}}
+					</div>
+					<div class="col-xs-12">
+					<p><strong>{{selectedRecord["price"] | currency}}<strong> 
+					    <div id="paypalButton">
+							<form target="paypal" class="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" style="display: inline-block;">
+							<input type="hidden" name="cmd" value="_cart">
+							<input type="hidden" name="business" value="o.keithpoon@gmail.com">
+							<input type="hidden" name="lc" value="zh_HK">
+							<input type="hidden" name="item_name" value="Sponline">
+							<input type="hidden" name="item_number" value="{{selectedRecord['productID']}}">
+							<input type="hidden" name="amount" value="{{selectedRecord['price']}}">
+							<input type="hidden" name="currency_code" value="HKD">
+							<input type="hidden" name="button_subtype" value="products">
+							<input type="hidden" name="no_note" value="0">
+							<input type="hidden" name="add" value="1">
+							<input type="hidden" name="bn" value="PP-ShopCartBF:btn_cart_LG.gif:NonHostedGuest">
+							
+							<span id="price"></span>
+							<input type="image" src="https://www.paypalobjects.com/zh_HK/i/btn/btn_cart_LG.gif" border="0" name="submit" alt="PayPal——最安全便捷的在线支付方式！">
+							<img alt="" border="0" src="https://www.paypalobjects.com/zh_HK/i/scr/pixel.gif" width="1" height="1">
+							</form>
+							<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post" style="display: inline-block;">
+							<input type="hidden" name="cmd" value="_s-xclick">
+							<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+							">
+							<input type="image" src="https://www.paypalobjects.com/zh_HK/i/btn/btn_viewcart_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online.">
+							<img alt="" border="0" src="https://www.paypalobjects.com/zh_HK/i/scr/pixel.gif" width="1" height="1">
+							</form>
+								</div>
+					</p>
+					</div>
+				</div>
+			</div>
+	  <!-- End - Display One Record -->
+  </div>
+  <!-- End - Read in details -->
+  </script>

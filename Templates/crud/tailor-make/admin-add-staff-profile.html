@@ -1,0 +1,132 @@
+
+<pre class="sr-only">{{cProfile | json}}</pre>
+  <fieldset ng-disabled="submitStatus.lockControl">
+			<input hidden name="table" ng-value="table.name">
+			<input hidden name="crud-type" ng-value="table.type">
+			  <div class="form-group form-entity" ng-controller="uploadCtrl">
+				<label class="col-sm-3 control-label">Product Image</label>
+                  <div class="col-sm-3" style="max-width: 354px;">
+                    <div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
+                   ngf-multiple="true" ngf-accept="'image/gif,image/jpeg,image/png'" accept="'image/gif,image/jpeg,image/png'"
+                   ngf-capture="true"
+                   ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+                   ngf-allow-dir="false" class="drop-box" ngf-drop-available="true"><img class="img-responsive" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'"style="display: table-cell; vertical-align: middle;"><span ng-hide="files[0].type.indexOf('image') > -1" style="display: table-cell; vertical-align: middle;">Select File or Drop</span></div>
+                    </div>
+                  <div class=" col-sm-offset-3 col-sm-3" style="clear: left;" ng-show="files[0].type.indexOf('image') > -1">
+				    <input
+					type="text"
+					class="form-control"
+					id="bannerURL"
+					name="bannerURL"
+					ng-model="create.bannerURL"
+                    ng-change="imagePathChanged(this)"
+                    readonly>
+                  </div>
+                  <div class="col-sm-3" ng-show="files[0].type.indexOf('image') > -1">
+                    <a href="#" class="btn btn-default fa fa-trash-o" ng-click="files[0]= {}"> Delete uploaded image</a>
+                  </div>
+                  <div ng-model="submitStatus.isCreateSuccess" ng-change="files=[]">
+                  </div>
+              </div>
+			  <div class="form-group form-entity">
+				<label for="productName" class="col-sm-3 control-label">Product Name</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.productName.$error.required}">
+				  <input
+					type="text"
+					class="form-control"
+					id="productName"
+					name="productName"
+					maxlength="{{fields.productName.length}}"
+					ng-required="fields.productName.null"
+					ng-model="create.productName">
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.productName.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="price" class="col-sm-3 control-label">Price</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.price.$error.required}">
+				  <input
+					type="number"
+					class="form-control"
+					id="price"
+					name="price"
+					maxlength="{{fields.price.length}}"
+					ng-required="fields.price.null"
+					ng-model="create.price">
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.price.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.price.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="quantity" class="col-sm-3 control-label">Quantity</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.quantity.$error.required}">
+				  <input
+					type="number"
+					class="form-control"
+					id="quantity"
+					name="quantity"
+					maxlength="{{fields.quantity.length}}"
+					ng-required="fields.quantity.null"
+					ng-model="create.quantity">
+				  <!--<span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.quantity.$error.required"></span>
+				  <span class="help-block">e.g Chan Tai Men</span>-->
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.quantity.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="publishStartDate" class="col-sm-3 control-label">Publish Start Date</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.publishStartDate.$error.required}">
+				  <input
+					type="date"
+					class="form-control"
+					id="publishStartDate"
+					name="publishStartDate"
+					maxlength="{{fields.publishStartDate.length || 65536}}"
+					ng-required="fields.publishStartDate.null"
+					ng-model="tempDate['dateObject']['publishStartDate']"
+					ng-change="convertDateToString(tempDate['dateObject']['publishStartDate'], 'publishStartDate', 'date')"
+					style="  line-height: initial;">
+				<input
+					type = "text"
+					readonly = "readonly"
+					class="sr-only"
+					ng-model="create.publishStartDate"
+					>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.publishStartDate.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.publishStartDate.$error.required">Required</label>
+				</div>
+			  </div>
+			  <div class="form-group form-entity">
+				<label for="publishEndDate" class="col-sm-3 control-label">Publish End Date</label>
+				<div class="col-sm-5" ng-class="{'has-error has-feedback' : cProfile.publishEndDate.$error.required}">
+				  <input
+					type="date"
+					class="form-control"
+					id="publishEndDate"
+					name="publishEndDate"
+					maxlength="{{fields.publishEndDate.length || 65536}}"
+					ng-required="fields.publishEndDate.null"
+					ng-model="tempDate['dateObject']['publishEndDate']"
+					ng-change="convertDateToString(tempDate['dateObject']['publishEndDate'], 'publishEndDate', 'date')"
+					style="  line-height: initial;">
+				<input
+					type = "text"
+					readonly = "readonly"
+					class="sr-only"
+					ng-model="create.publishEndDate"
+					>
+				  <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="cProfile.publishEndDate.$error.required"></span>
+				</div>
+				<div class="col-sm-4">
+				  <label class="text-danger control-label" ng-show="cProfile.publishEndDate.$error.required">Required</label>
+				</div>
+			  </div>
+			</fieldset>

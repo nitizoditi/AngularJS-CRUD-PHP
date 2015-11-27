@@ -1,0 +1,321 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/bootstrap-t.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minmum-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Sponline |</title>
+<!-- InstanceEndEditable -->
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="third-party/font-awesome-4.4.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angular-1.4.2/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/controllerCRUD.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-create.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-read.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-update.js"></script>
+<script type="text/javascript" src="js/controllerCRUD-delete.js"></script>
+<script type="text/javascript" src="js/controller-listwin.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+  <script src="third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<script type="text/javascript" src="js/securityControl.js"></script>
+<script>
+$(function() {
+	checkUserLogin(function(isUserLogin){
+	  // here you use the output
+	  if(isUserLogin=="0"){
+		  redirectToHomePage()
+	  }
+		else{
+		  redirectToLoginPage()
+		}
+	});
+});
+</script>
+<style>
+.function_list_outer {
+	/* position: absolute; top: 0px; left: 0px; z-index: 2; */
+}
+.function_list {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	overflow: auto;
+}
+.function_list a {
+	text-align: center;
+	text-decoration: none;
+	color: #000;
+	width: 230px;
+	margin-right: 20px;
+	margin-bottom: 30px;
+	margin-left: 20px;
+	display: inline-block;
+	-webkit-transition: all 300ms ease-in-out 100ms;
+	-moz-transition: all 300ms ease-in-out 100ms;
+	-ms-transition: all 300ms ease-in-out 100ms;
+	-o-transition: all 300ms ease-in-out 100ms;
+	transition: all 300ms ease-in-out 100ms;
+	opacity: 0.7;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	box-shadow: 0px 0px 3px #9D9D9D;
+}
+.function_list a:hover {
+	opacity: 1;
+	box-shadow: 0px 0px 5px #757575;
+	
+	-moz-transform: scale(1.1) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+	-webkit-transform: scale(1.1) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -o-transform: scale(1.1) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -ms-transform: scale(1.1) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    transform: scale(1.1) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+}
+.function_btn {
+	background-image: url(images/functionBtn/functionBtn.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: contain;
+	height: 150px;
+	width: 100%;
+	text-align: center;
+	position: relative;
+	display: block;
+}
+.wallpaper {
+  position: absolute; top: 0px; left: 0px; z-index: 10;
+  opacity:1;
+  background-image: url("images/wallpaper/29.jpg");
+  width: 100%;
+  height: 100%;
+}
+@media screen and (max-width: 768px) {
+.function_btn {
+	opacity: 1;
+}
+.fa {
+	font-size: 6em;
+}
+}
+@media screen and (max-width: 640px) {
+.function_list a {
+	opacity: 1;
+	width: 90%;
+	box-sizing: border-box;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+}
+@media screen and (min-width: 768px) {
+.wallpaper-container {
+	display: inline-flex;
+}
+}
+#backgroud_staff_maintenance {
+	background-image: url(images/functionBtn/product-amend.png)
+}
+#backgroud_org_chart {
+	background-image: url(images/functionBtn/1436559970_flow_chart.png);
+}
+#backgroud_add_client {
+	background-image: url(images/functionBtn/1436559876_add_user.png)
+}
+#backgroud_add_staff_profile {
+	background-image: url(images/functionBtn/product.png);
+}
+#backgroud_add_staff_profile2 {
+	background-image: url(images/label_new_blue.png), url(images/functionBtn/fortress.png);
+	background-size: 64px 64px, 128px 128px;
+	background-repeat: no-repeat;
+	background-position: right top, center center;
+}
+#backgroud_client_maintenance {
+	background-image: url(images/functionBtn/1436559874_businessman.png);
+}
+#backgroud_image_suggest {
+	background-image: url(images/functionBtn/speak.png);
+}
+#backgroud_image_old {
+	background-image: url(images/functionBtn/preferences_system.png);
+}
+.fa {
+	font-size: 8em;
+}
+</style>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar">
+  <!-- InstanceBeginEditable name="topbar" -->
+  <!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header start -->
+<div id="header">
+  <div id="header_title">
+    <!-- InstanceBeginEditable name="header" -->
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div id="comapny_icon_container" class="navbar-brand">
+        <a href="index.html"></a>
+        <span class="hidden-xs">sponline 藥房</span>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img id="profile_icon" src="images/people.png"><span class="user_nickName">Nick Name</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="main-menu.html">Admin Main Page</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Change Password</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="controller/user-logout-redirect.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<!-- InstanceEndEditable -->
+  </div>
+</div>
+<!-- header end -->
+<!-- site position start -->
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+<ul>
+  <li><a href="http://localhost/sponline">首頁</a></li>
+  <li><a href="main-menu.html">管理員目錄</a></li>
+</ul>
+</div>
+<!-- InstanceEndEditable -->
+<!-- site position end -->
+<!-- InstanceBeginEditable name="intro" -->
+<div id="intro" class="container panel panel-default">
+  <div id="intro_left" class="panel-body"></div>
+  <div id="intro_right" class="panel-body"></div>
+</div>
+<!-- InstanceEndEditable -->
+<div id="content" class="container">
+  <!-- InstanceBeginEditable name="content" -->
+  <div class="panel">
+      <div class="wallpaper-container" style="position: relative;overflow: hidden;">
+        <div class="function_list_outer">
+          <div class="function_list">
+            <a href="admin-add-product.html">
+              <div class=" function_btn" id="backgroud_add_staff_profile">
+              </div>
+              <div class="fun_name">Add product</div>
+            </a>
+            <a href="admin-entry-product.html">
+              <div class="function_btn" id="backgroud_staff_maintenance">
+              </div>
+              <div class="fun_name">Product Amendment</div>
+            </a>
+            <!--
+            <a href="org-chart.html">
+              <div class="function_btn" id="backgroud_org_chart">
+              </div>
+              <div class="fun_name">Generate organization chart</div>
+            </a>
+            <a href="activity.html">
+              <div class="function_btn" id="backgroud_add_client">
+              </div>
+              <div class="fun_name">Add client</div>
+            </a>
+            
+            <a href="synthesis.html">
+              <div class="function_btn" id="backgroud_client_maintenance">
+              </div>
+              <div class="fun_name">Client maintenance</div>
+            </a>
+            -->
+            <a href="house.html" style="display: none;">
+              <div class="function_btn" id="backgroud_image_studio">
+              <i class="fa fa-camera-retro"></i>
+              </div>
+              <div class="fun_name">資源採集、小屋製作 記錄</div>
+            </a>
+            <a href="wedding.html" style="display: none;">
+              <div class="function_btn" id="backgroud_image_wedding">
+              <i class="fa fa-camera-retro"></i>
+              </div>
+              <div class="fun_name">結婚、伙伴養成系統 記錄</div>
+            </a>
+            <a href="others.html" style="display: none;">
+              <div class="function_btn">
+              </div>
+              <div class="fun_name">其它</div>
+            </a>
+          </div>
+      </div>
+      </div>
+  </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+<footer>
+  <div id="team_member_backgroup">
+    <div id="team_member">
+      <ol>
+        <li>網站地圖︰
+          <nav>
+            <ul>
+              <li>家庭用品</li>
+              <li>浴室用品</li>
+              <li>獨立專區</li>
+              <li>嬰兒專區</li>
+              <li>長者專區</li>
+              <li>衛生防護用品</li>
+            </ul>
+          </nav>
+        </li>
+        <li>關於本店:
+          <nav>
+            <ul>
+              <li><a href="#">商店資訊</a></li>
+              <li><a href="#">付款須知</a></li>
+              <li><a href="#">私隱聲明</a></li>
+              <li><a href="#">聯絡我們</a></li>
+            </ul>
+          </nav>
+        </li>
+        <li style="display: none;">You may contact us by using the following information 
+          or sending us a message via our contact form.
+          <nav>
+            <ul>
+              <li>Tel: 2900 0000</li>
+              <li>Email: admin@hrms.com.hk</li>
+            </ul>
+          </nav>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <div id="copyright"> Copyright © 2015. All Rights Reserved. </div>
+</footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>

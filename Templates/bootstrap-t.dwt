@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minmum-scale=1">
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>Sponline |</title>
+<!-- TemplateEndEditable -->
+<link rel="stylesheet" type="text/css" href="../css/body.css">
+<link rel="stylesheet" type="text/css" href="../css/chrome.css">
+<link rel="stylesheet" type="text/css" href="../third-party/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="../third-party/font-awesome-4.4.0/css/font-awesome.min.css">
+<script type="text/javascript" src="../third-party/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../third-party/angular-1.4.2/angular.min.js"></script>
+<script type="text/javascript" src="../third-party/angular-1.4.2/angular-animate.min.js"></script>
+<script type="text/javascript" src="../third-party/angular-1.4.2/angular-route.min.js"></script>
+<script type="text/javascript" src="../third-party/angular-1.4.2/angular-touch.min.js"></script>
+<script type="text/javascript" src="../third-party/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/controllerCRUD.js"></script>
+<script type="text/javascript" src="../js/controllerCRUD-create.js"></script>
+<script type="text/javascript" src="../js/controllerCRUD-read.js"></script>
+<script type="text/javascript" src="../js/controllerCRUD-update.js"></script>
+<script type="text/javascript" src="../js/controllerCRUD-delete.js"></script>
+<script type="text/javascript" src="../js/controller-listwin.js"></script>
+  <script src="../third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+  <script src="../third-party/ng-file-upload-5.0.9/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- TemplateBeginEditable name="head" -->
+<script type="text/javascript" src="../js/securityControl.js"></script>
+<script>
+$(function() {
+	
+});
+</script>
+<!-- TemplateEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar">
+  <!-- TemplateBeginEditable name="topbar" -->
+  <!-- TemplateEndEditable -->
+  </div>
+</div>
+<!-- header start -->
+<div id="header">
+  <div id="header_title">
+    <!-- TemplateBeginEditable name="header" -->
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div id="comapny_icon_container" class="navbar-brand">
+        <a href="../index.html"></a>
+        <span class="hidden-xs">sponline 藥房</span>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div class="navbar-header navbar-brand navbar-right loginButton"><a href="login.html">Login</a></div>
+      
+      <ul class="nav navbar-nav navbar-right requireLogin">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img id="profile_icon" src="images/people.png"><span class="user_nickName">Nick Name</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="main-menu.html">Admin Main Page</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Change Password</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="controller/user-logout-redirect.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<!-- TemplateEndEditable -->
+  </div>
+</div>
+<!-- header end -->
+<!-- site position start -->
+<!-- TemplateBeginEditable name="position" -->
+<div id="site_position">
+<ul>
+  <li><a href="http://localhost/sponline">首頁</a></li>
+  <li><a href="main-menu.html">Main Menu</a></li>
+</ul>
+</div>
+<!-- TemplateEndEditable -->
+<!-- site position end -->
+<!-- TemplateBeginEditable name="intro" -->
+<div id="intro" class="container panel panel-default">
+  <div id="intro_left" class="panel-body"></div>
+  <div id="intro_right" class="panel-body"></div>
+</div>
+<!-- TemplateEndEditable -->
+<div id="content" class="container">
+  <!-- TemplateBeginEditable name="content" -->
+  <div class="panel">
+  </div>
+  <!-- TemplateEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+<footer>
+  <div id="team_member_backgroup">
+    <div id="team_member">
+      <ol>
+        <li>網站地圖︰
+          <nav>
+            <ul>
+              <li>家庭用品</li>
+              <li>浴室用品</li>
+              <li>獨立專區</li>
+              <li>嬰兒專區</li>
+              <li>長者專區</li>
+              <li>衛生防護用品</li>
+            </ul>
+          </nav>
+        </li>
+        <li>關於本店:
+          <nav>
+            <ul>
+              <li><a href="#">商店資訊</a></li>
+              <li><a href="#">付款須知</a></li>
+              <li><a href="#">私隱聲明</a></li>
+              <li><a href="#">聯絡我們</a></li>
+            </ul>
+          </nav>
+        </li>
+        <li style="display: none;">You may contact us by using the following information 
+          or sending us a message via our contact form.
+          <nav>
+            <ul>
+              <li>Tel: 2900 0000</li>
+              <li>Email: admin@hrms.com.hk</li>
+            </ul>
+          </nav>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <div id="copyright"> Copyright © 2015. All Rights Reserved. </div>
+</footer>
+</div>
+</body>
+</html>
